@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Align the central PET3 unit to the HEMT pose in 5XH3 and map to 6EQE."""
 from pathlib import Path
+import argparse
 
 import numpy as np
 from Bio import Align
@@ -11,6 +12,7 @@ from rdkit import Chem
 from rdkit.Chem import AllChem, rdMolDescriptors
 from pet3_spec import (
     CONFORMER_SEED, EXPECTED_ATOMS, EXPECTED_FORMULA, HEMT_TO_PET3, SMILES,
+    PET4_ATOMS, PET4_FORMULA, PET4_SMILES,
     SCISSILE_CARBONYL_C, SCISSILE_CARBONYL_O, SCISSILE_ESTER_O,
 )
 
@@ -18,10 +20,6 @@ from pet3_spec import (
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "structures" / "raw"
 PREPARED = ROOT / "structures" / "prepared"
-OUT = ROOT / "structures" / "PET3"
-OUT.mkdir(parents=True, exist_ok=True)
-
-
 def chain_and_residues(path):
     structure = MMCIFParser(QUIET=True).get_structure(path.stem, str(path))
     chain = structure[0]["A"]
@@ -51,8 +49,18 @@ def protein_transform():
 
 
 def main():
-    mol = Chem.AddHs(Chem.MolFromSmiles(SMILES))
-    if rdMolDescriptors.CalcMolFormula(mol) != EXPECTED_FORMULA or mol.GetNumAtoms() != EXPECTED_ATOMS:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--units", type=int, choices=(3, 4), default=3)
+    units = parser.parse_args().units
+    smiles, formula, atom_count = (
+        (SMILES, EXPECTED_FORMULA, EXPECTED_ATOMS)
+        if units == 3
+        else (PET4_SMILES, PET4_FORMULA, PET4_ATOMS)
+    )
+    out = ROOT / "structures" / f"PET{units}"
+    out.mkdir(parents=True, exist_ok=True)
+    mol = Chem.AddHs(Chem.MolFromSmiles(smiles))
+    if rdMolDescriptors.CalcMolFormula(mol) != formula or mol.GetNumAtoms() != atom_count:
         raise ValueError("PET3 formula or atom count mismatch")
     params = AllChem.ETKDGv3()
     params.randomSeed = CONFORMER_SEED
@@ -92,9 +100,9 @@ def main():
     for i, xyz in enumerate(in_6eqe):
         conf.SetAtomPosition(i, xyz.tolist())
 
-    mol.SetProp("_Name", "2-HE(MHET)3 aligned to central HEMT-like unit in 5XH3")
-    mol.SetProp("Formula", EXPECTED_FORMULA)
-    mol.SetProp("AtomCountIncludingHydrogen", str(EXPECTED_ATOMS))
+    mol.SetProp("_Name", f"2-HE(MHET){units} aligned to central HEMT-like unit in 5XH3")
+    mol.SetProp("Formula", formula)
+    mol.SetProp("AtomCountIncludingHydrogen", str(atom_count))
     mol.SetProp("Template", "5XH3 HEMT, component 856")
     mol.SetProp("ReferenceProtein", "6EQE chain A")
     mol.SetProp("TemplateFitRMSD_A", f"{ligand_fit_rmsd:.4f}")
@@ -102,9 +110,10 @@ def main():
     mol.SetProp("ScissileCarbonylC_PET3AtomIndex", str(SCISSILE_CARBONYL_C))
     mol.SetProp("ScissileCarbonylO_PET3AtomIndex", str(SCISSILE_CARBONYL_O))
     mol.SetProp("ScissileEsterO_PET3AtomIndex", str(SCISSILE_ESTER_O))
-    Chem.MolToMolFile(mol, str(OUT / "2-HE-MHET3_5XH3_pose_seed.mol"))
-    Chem.MolToMolFile(mol, str(OUT / "2-HE-MHET3_5XH3_pose_seed.sdf"))
-    Chem.MolToPDBFile(mol, str(OUT / "2-HE-MHET3_5XH3_pose_seed.pdb"))
+    stem = f"2-HE-MHET{units}"
+    Chem.MolToMolFile(mol, str(out / f"{stem}_5XH3_pose_seed.mol"))
+    Chem.MolToMolFile(mol, str(out / f"{stem}_5XH3_pose_seed.sdf"))
+    Chem.MolToPDBFile(mol, str(out / f"{stem}_5XH3_pose_seed.pdb"))
 
     protein = PDBParser(QUIET=True).get_structure(
         "6EQE", str(PREPARED / "6EQE_WT_chainA_heavy.pdb")
@@ -123,11 +132,11 @@ def main():
     tyr_o_distance = float(np.linalg.norm(heavy_coords[SCISSILE_CARBONYL_O] - tyr87_n))
     met_o_distance = float(np.linalg.norm(heavy_coords[SCISSILE_CARBONYL_O] - met161_n))
 
-    report = f"""# PET3 initial-pose seed QC
+    report = f"""# PET{units} initial-pose seed QC
 
 This is an initial geometric seed, not a relaxed enzyme-substrate complex or an MD-ready input.
 
-- Ligand: literature 2-HE(MHET)3; {EXPECTED_FORMULA}; {EXPECTED_ATOMS} atoms including hydrogens.
+- Ligand: 2-HE(MHET){units}; {formula}; {atom_count} atoms including hydrogens.
 - Alignment template: HEMT component 856 in 5XH3 chain A.
 - Mapped PET3 central terephthalate unit onto the HEMT aromatic ring and ester groups.
 - HEMT atoms used: {', '.join(atom_names)}.
@@ -142,7 +151,8 @@ This is an initial geometric seed, not a relaxed enzyme-substrate complex or an 
 
 Review this pose visually and inspect clashes, torsions, oxyanion-hole geometry, and the Ser160 nucleophile distance before restrained relaxation. The HEMT structure is a catalytically inactive mutant, so this template constrains binding geometry but does not supply a WT catalytic state.
 """
-    (ROOT / "docs" / "initial_pose_qc.md").write_text(report, encoding="utf-8")
+    report_name = "initial_pose_qc.md" if units == 3 else "initial_pose_qc_pet4.md"
+    (ROOT / "docs" / report_name).write_text(report, encoding="utf-8")
     print(f"all_local_atoms_fit_rmsd_A={full_fragment_rmsd:.3f}; core_rmsd_in_fit_A={core_fit_rmsd:.3f}")
     print(f"protein_alignment_rmsd_A={protein_rmsd:.3f}")
     print(f"Ser160_OG_to_scissile_C_A={ser_c_distance:.3f}")

@@ -5,6 +5,12 @@ EXPECTED_FORMULA = "C32H30O14"
 EXPECTED_ATOMS = 76
 CONFORMER_SEED = 20260923
 
+# Four terephthalate units / five ethylene-glycol segments. This extends
+# 2-HE(MHET)3 by one MHET repeat to represent the PADFL paper's 4PET model.
+PET4_SMILES = "OCCOC(=O)c1ccc(C(=O)OCCOC(=O)c2ccc(C(=O)OCCOC(=O)c3ccc(C(=O)OCCOC(=O)c4ccc(C(=O)OCCO)cc4)cc3)cc2)cc1"
+PET4_FORMULA = "C42H38O18"
+PET4_ATOMS = 98
+
 # Heavy-atom correspondences from the 5XH3 HEMT component to the middle
 # terephthalate unit of 2-HE(MHET)3. The C09/O10/O11 group is the
 # oxyanion-hole carbonyl identified from the crystallographic coordinates.
