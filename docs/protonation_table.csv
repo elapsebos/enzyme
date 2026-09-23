@@ -1,0 +1,3 @@
+system,chain,residue_number,residue_name,proposed_state,method_or_evidence,local_geometry_review,final_state,reviewer,date,status,notes
+WT,,,,,,,,,,pending,"Include catalytic-triad residues and all titratable residues requiring review"
+PADFL,,,,,,,,,,pending,"Use a matched protocol; record mutation-driven charge changes explicitly"

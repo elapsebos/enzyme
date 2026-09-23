@@ -1,0 +1,6 @@
+variant,mutation_label,reference_sequence_position,reference_residue,structure_chain,structure_residue_number,structure_residue,sequence_alignment_position,evidence_source,status,notes
+PADFL,S121P,121,S,A,121,S,93,"PADFL paper; 6EQE chain A",mapped_preliminary,"Residue identity and author numbering verified against 6EQE; sequence index 93 within resolved chain"
+PADFL,D186A,186,D,A,186,D,158,"PADFL paper; 6EQE chain A",mapped_preliminary,"Residue identity and author numbering verified against 6EQE; sequence index 158 within resolved chain"
+PADFL,N246D,246,N,A,246,N,218,"PADFL paper; 6EQE chain A",mapped_preliminary,"Residue identity and author numbering verified against 6EQE; sequence index 218 within resolved chain"
+PADFL,Y87F,87,Y,A,87,Y,59,"PADFL paper; 6EQE chain A",mapped_preliminary,"Residue identity and author numbering verified against 6EQE; sequence index 59 within resolved chain"
+PADFL,N233L,233,N,A,233,N,205,"PADFL paper; 6EQE chain A",mapped_preliminary,"Residue identity and author numbering verified against 6EQE; sequence index 205 within resolved chain"

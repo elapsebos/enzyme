@@ -1,0 +1,38 @@
+# GROMACS trajectories and run outputs
+*.xtc
+*.trr
+*.edr
+*.cpt
+*.tpr
+*.log
+mdout.mdp
+confout.gro
+ener.edr
+traj_comp.xtc
+
+# PLUMED production output
+HILLS*
+COLVAR*
+fes.dat
+
+# Scheduler output and crash dumps
+slurm-*.out
+core.*
+
+# Python and notebook caches
+__pycache__/
+.ipynb_checkpoints/
+
+# Editor and operating system files
+.DS_Store
+Thumbs.db
+*.swp
+__pycache__/
+*.py[cod]
+/tmp/
+
+# Source article files are retained locally; track citations and notes instead.
+/doc/*.pdf
+/doc/*.docx
+/doc/*.md
+!/doc/TODO.md

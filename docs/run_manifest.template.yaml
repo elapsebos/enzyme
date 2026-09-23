@@ -1,0 +1,41 @@
+# Copy this file into each run directory and fill in all fields before launch.
+system: "WT-PET3 or PADFL-PET3"
+stage: "minimization | equilibration | unbiased_md | funnel_metad | other"
+created_utc: "YYYY-MM-DD"
+purpose: ""
+
+provenance:
+  repository: ""
+  git_commit: ""
+  structure_source_ids: []
+  input_checksums: {}
+
+system_details:
+  protein_model: ""
+  ligand_model: ""
+  ligand_chemistry_and_termini: ""
+  protonation_record: ""
+  force_fields: {}
+  water_model: ""
+  ions: ""
+
+software:
+  gromacs: ""
+  plumed: ""
+  parameterization_tools: {}
+
+sampling:
+  temperature_K: null
+  pressure_bar: null
+  timestep_fs: null
+  replicas_or_walkers: null
+  random_seeds: []
+  collective_variables: []
+
+execution:
+  platform: ""
+  job_ids: []
+  run_directory: ""
+  large_output_location: ""
+
+notes: ""
