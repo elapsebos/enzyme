@@ -1,10 +1,10 @@
-# IsPETase–PET4 WT/PADFL Project
+# IsPETase–PET3 WT/PADFL Project
 
-This repository tracks the structural preparation and simulation workflow for comparing wild-type IsPETase and the PADFL variant with a PET oligomer. PET4 (four terephthalate units) is the intended production ligand; PET3 is retained as a lower-cost benchmark.
+This repository tracks the structural preparation and simulation workflow for comparing wild-type IsPETase and the PADFL variant with PET3 (`2-HE(MHET)3`). PET3 is the current primary ligand; PET4 is retained as an optional chain-length comparison.
 
 ## Current status
 
-The project has candidate structures downloaded and sequence-audited. 6EQE is the current WT scaffold candidate; structure preparation, PET3 active-site placement, protonation, and simulation parameters are not frozen.
+The project has candidate structures downloaded and sequence-audited. 6EQE is the current WT scaffold candidate. PET3 chemistry and a first active-site pose seed are defined, but protein preparation, ligand parameters, protonation, and simulation inputs are not frozen.
 
 ## Project records
 
@@ -17,7 +17,7 @@ The project has candidate structures downloaded and sequence-audited. 6EQE is th
 - docs/run_manifest.template.yaml: provenance template for each simulation run.
 - docs/structure_comparison.md: verified structure metadata and sequence mapping.
 - docs/pet3_definition.md: PET3 literature definition and remaining parameterization work.
-- docs/pet_oligomer_literature_review.md: comparison of recent PETase oligomer choices and the PET4/PET3 recommendation.
+- docs/pet_oligomer_literature_review.md: comparison of recent PETase oligomer choices and the current PET3 project decision.
 - docs/protein_preparation.md: status and limits of the coordinate-only WT/PADFL structures.
 - docs/initial_pose_qc.md and docs/initial_pose_qc_pet4.md: preliminary PET3/PET4 placement seeds and geometric checks.
 - docs/progress.md: completed and blocked stages.
