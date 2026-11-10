@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Configuration-driven RESP2 jobs. Python 3.10+, no Python dependencies."""
+"""Configuration-driven RESP/RESP2 Slurm jobs. Python 3.10+."""
 import argparse
 import copy
 import datetime
@@ -120,9 +120,18 @@ def validate(config):
         if memory_mb(config['resources']['gaussian_memory']) >= memory_mb(slurm['mem']):
             raise ValueError('Gaussian memory must be smaller than Slurm memory')
     chem = config['chemistry']
-    if chem['protocol'] != 'RESP2':
-        raise ValueError('Only RESP2 is implemented; HF/6-31G(d) RESP requires a separate protocol')
-    if not 0 <= chem['delta'] <= 1:
+    if chem['protocol'] not in ('RESP', 'RESP2'):
+        raise ValueError('protocol must be RESP or RESP2')
+    if chem['protocol'] == 'RESP':
+        if config['engine'] != 'gaussian' or chem.get('fit_backend') != 'ambertools':
+            raise ValueError('Traditional RESP currently requires gaussian + ambertools backend')
+        if not re.search(r'\bHF/6-31G\(d\)', chem['gaussian_sp'], re.I):
+            raise ValueError('This traditional RESP preset requires HF/6-31G(d) gas ESP')
+        if re.search(r'scrf|cpcm|smd|solvent', chem['gaussian_sp'] + ' ' + chem['gaussian_opt'], re.I):
+            raise ValueError('Traditional RESP preset must use gas-phase QM keywords')
+    elif chem.get('fit_backend', 'multiwfn') != 'multiwfn':
+        raise ValueError('RESP2 currently requires multiwfn backend')
+    if chem['protocol'] == 'RESP2' and not 0 <= chem['delta'] <= 1:
         raise ValueError('delta must be in [0, 1]')
     for key in ('charge_tolerance', 'coordinate_tolerance_angstrom'):
         if not 0 < chem[key] <= 0.01:
@@ -150,7 +159,7 @@ def validate(config):
 
 def sbatch_text(config, work, runner):
     slurm = config['slurm']
-    directives = ['#!/bin/bash', '#SBATCH --job-name=resp2_' + config['ligands'][0]['id']]
+    directives = ['#!/bin/bash', '#SBATCH --job-name=' + config['chemistry']['protocol'].lower() + '_' + config['ligands'][0]['id']]
     for key, option in [('partition', 'partition'), ('account', 'account'), ('qos', 'qos'),
                         ('constraint', 'constraint'), ('licenses', 'licenses'), ('nodes', 'nodes'), ('ntasks', 'ntasks'),
                         ('cpus_per_task', 'cpus-per-task'), ('mem', 'mem'), ('time', 'time')]:
@@ -174,6 +183,22 @@ def prepare(path, submit=False, engine=None, no_optimize=False):
         raise ValueError('Wrapper engine differs from configuration engine')
     if no_optimize:
         config['chemistry']['optimize'] = False
+    input_root = config.get('input_directory')
+    if input_root:
+        directory = (path.parent / input_root).resolve()
+        discovered = {f.name: f for f in directory.glob('*.mol2') if f.is_file()}
+        configured = {item['input']: item for item in config['ligands']}
+        unknown = set(discovered) - set(configured)
+        if unknown:
+            raise ValueError('Set charge/multiplicity/enabled for new input files: ' + ', '.join(sorted(unknown)))
+        selected = []
+        for item in config['ligands']:
+            if not item.get('enabled', True):
+                continue
+            if item['input'] not in discovered:
+                raise ValueError('Enabled ligand missing from input/: ' + item['input'])
+            selected.append(dict(item, input=str(discovered[item['input']])))
+        config['ligands'] = selected
     validate(config)
     inputs = []
     for ligand in config['ligands']:
@@ -199,10 +224,12 @@ def prepare(path, submit=False, engine=None, no_optimize=False):
             snapshot['scratch_root'] = str((path.parent / snapshot['scratch_root']).resolve())
         snapshot['ligands'] = [dict(ligand, input='input.mol2')]
         write_json(work / 'config.json', snapshot)
-        shutil.copy2(Path(__file__).resolve(), work / 'resp2_pipeline.py')
-        (work / 'job.sbatch').write_text(sbatch_text(snapshot, work, work / 'resp2_pipeline.py'), encoding='utf-8', newline='\n')
+        snapshot.pop('input_directory', None)
+        write_json(work / 'config.json', snapshot)
+        shutil.copy2(Path(__file__).resolve(), work / 'ligprep.py')
+        (work / 'job.sbatch').write_text(sbatch_text(snapshot, work, work / 'ligprep.py'), encoding='utf-8', newline='\n')
         print('Prepared:', work)
-        if submit:
+        if submit or config.get('execution', {}).get('submit', False):
             subprocess.run(['sbatch', 'job.sbatch'], cwd=str(work), check=True)
 
 
@@ -213,7 +240,7 @@ def execute(args, directory, label, stdin=None):
 
 
 def xyz_write(path, atoms):
-    text = str(len(atoms)) + '\nRESP2 geometry; Angstrom\n'
+    text = str(len(atoms)) + '\nLigand geometry; Angstrom\n'
     text += ''.join(a['element'] + ' ' + ' '.join('%.10f' % x for x in a['xyz']) + '\n' for a in atoms)
     path.write_text(text, encoding='ascii')
 
@@ -296,9 +323,50 @@ def write_charged_mol2(source, output, record):
             lines[i] = ' '.join(fields)
             counter += 1
     header = lines.index('@<TRIPOS>MOLECULE')
-    lines[header + 1] = 'RESP2 fitted charges; original input geometry; delta=' + str(record['delta'])
+    lines[header + 1] = record['protocol'] + ' fitted charges; original input geometry'
+    if record['protocol'] == 'RESP2':
+        lines[header + 1] += '; delta=' + str(record['delta'])
     lines[header + 4] = 'USER_CHARGES'
     output.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+
+
+def amber_fit(folder, programs, source, ligand, geometry, chem):
+    """Two-stage AmberTools RESP on Gaussian gas-phase MK ESP."""
+    _, original = mol2(source)
+    execute([programs['espgen'], '-i', 'qm.stdout', '-o', 'esp.dat'], folder, 'espgen')
+    lines = (folder / 'esp.dat').read_text().splitlines()
+    header = lines[0].split()
+    count, points = (int(header[0]), int(header[1])) if len(header) >= 2 else (int(lines[0][:5]), int(lines[0][5:10]))
+    if count != len(geometry) or points < 1 or len(lines) < 1 + count + points:
+        raise ValueError('Invalid Amber ESP atom/grid counts')
+    esp_atoms = [dict(element=a['element'], xyz=[float(v.replace('D', 'E')) * .529177210903
+                                              for v in line.split()[-3:]])
+                 for a, line in zip(geometry, lines[1:1+count])]
+    matching(geometry, esp_atoms, chem['coordinate_tolerance_angstrom'])
+    for line in lines[1+count:1+count+points]:
+        values = [float(v.replace('D', 'E')) for v in line.split()]
+        if len(values) != 4 or not all(math.isfinite(v) for v in values):
+            raise ValueError('Invalid Amber ESP grid values')
+    execute([programs['antechamber'], '-i', str(source), '-fi', 'mol2', '-o', 'ligand.ac',
+             '-fo', 'ac', '-at', 'gaff2', '-nc', str(ligand['charge']), '-s', '2'], folder, 'antechamber')
+    names = [line.split()[2] for line in (folder / 'ligand.ac').read_text().splitlines()
+             if line.split() and line.split()[0] == 'ATOM']
+    if names != [a['name'] for a in original]:
+        raise ValueError('Antechamber reordered/renamed atoms; explicit mapping is required')
+    for step in (1, 2):
+        execute([programs['respgen'], '-i', 'ligand.ac', '-o', 'resp%d.in' % step,
+                 '-f', 'resp%d' % step], folder, 'respgen%d' % step)
+        args = [programs['resp'], '-i', 'resp%d.in' % step, '-o', 'resp%d.out' % step,
+                '-p', 'resp%d.punch' % step, '-e', 'esp.dat', '-t', 'qout%d' % step]
+        if step == 2:
+            args += ['-q', 'qout1']
+        execute(args, folder, 'resp%d' % step)
+    values = [float(v.replace('D', 'E')) for v in (folder / 'qout2').read_text().split()]
+    if len(values) != len(geometry) or not all(math.isfinite(v) for v in values):
+        raise ValueError('Amber RESP charge count or values invalid')
+    if abs(sum(values) - ligand['charge']) > chem['charge_tolerance']:
+        raise ValueError('Amber RESP net charge mismatch')
+    return [dict(a, charge=q) for a, q in zip(geometry, values)]
 
 
 def run(path):
@@ -315,7 +383,9 @@ def run(path):
     _, atoms = mol2(source)
     chem = config['chemistry']
     programs = {}
-    required = ['multiwfn'] + (['orca', 'orca_2mkl'] if config['engine'] == 'orca' else ['gaussian', 'formchk'])
+    traditional = chem['protocol'] == 'RESP'
+    required = (['antechamber', 'espgen', 'respgen', 'resp'] if traditional else ['multiwfn'])
+    required += ['orca', 'orca_2mkl'] if config['engine'] == 'orca' else ['gaussian', 'formchk']
     for key in required:
         program = shutil.which(config['programs'][key])
         if not program:
@@ -342,12 +412,12 @@ def run(path):
     try:
         geometry = atoms
         xyz_write(work / 'initial.xyz', geometry)
-        stages = (['opt'] if chem['optimize'] else []) + ['gas', 'solvent']
+        stages = (['opt'] if chem['optimize'] else []) + (['gas'] if traditional else ['gas', 'solvent'])
         charges = {}
         for stage in stages:
             folder = work / stage
             folder.mkdir()
-            solvent = stage != 'gas'
+            solvent = not traditional and stage != 'gas'
             if config['engine'] == 'orca':
                 keywords = chem['orca_opt'] if stage == 'opt' else chem['orca_sp']
                 text = '! ' + keywords + '\n%maxcore ' + str(config['resources']['orca_maxcore_mb'])
@@ -378,7 +448,7 @@ def run(path):
                     keywords += ' SCRF=(' + chem['gaussian_solvent_model'] + ',Solvent=' + chem['solvent'] + ')'
                 if stage != 'opt':
                     keywords += ' Pop=MK IOp(6/33=2,6/42=6)'
-                text = '%%chk=job.chk\n%%nprocshared=%d\n%%mem=%s\n# %s\n\nRESP2 %s\n\n%d %d\n' % (
+                text = '%%chk=job.chk\n%%nprocshared=%d\n%%mem=%s\n# %s\n\nLigand %s\n\n%d %d\n' % (
                     slurm['cpus_per_task'], config['resources']['gaussian_memory'], keywords, stage,
                     ligand['charge'], ligand['multiplicity'])
                 text += ''.join(a['element'] + ' ' + ' '.join('%.10f' % x for x in a['xyz']) + '\n' for a in geometry) + '\n'
@@ -400,6 +470,10 @@ def run(path):
                 geometry = new_geometry
                 xyz_write(work / 'optimized.xyz', geometry)
                 continue
+            if traditional:
+                fitted = amber_fit(folder, programs, source, ligand, geometry, chem)
+                charges[stage] = fitted
+                continue
             (folder / 'multiwfn.stdin').write_text(menu)
             execute([programs['multiwfn'], wavefunction, '-ispecial', '1'], folder, 'multiwfn', menu)
             fitted = read_charges(folder / 'job.chg')
@@ -407,16 +481,18 @@ def run(path):
             if abs(sum(a['charge'] for a in fitted) - ligand['charge']) > chem['charge_tolerance']:
                 raise ValueError('Fitted net charge mismatch: ' + stage)
             charges[stage] = fitted
-        delta = chem['delta']
-        matching(charges['gas'], charges['solvent'], chem['coordinate_tolerance_angstrom'])
+        delta = None if traditional else chem['delta']
+        if not traditional:
+            matching(charges['gas'], charges['solvent'], chem['coordinate_tolerance_angstrom'])
         final = [dict(id=a['id'], name=a['name'], element=a['element'], xyz=g['xyz'],
-                      charge=(1-delta)*g['charge'] + delta*s['charge'])
-                 for a, g, s in zip(atoms, charges['gas'], charges['solvent'])]
-        record = dict(protocol='RESP2', delta=delta, net_charge=ligand['charge'],
+                      charge=g['charge'] if traditional else (1-delta)*g['charge'] + delta*charges['solvent'][i]['charge'])
+                 for i, (a, g) in enumerate(zip(atoms, charges['gas']))]
+        record = dict(protocol=chem['protocol'], delta=delta, net_charge=ligand['charge'],
                       charge_tolerance=chem['charge_tolerance'], input_sha256=digest(source), atoms=final)
         write_json(work / 'charges.json', record)
-        write_charged_mol2(source, work / 'result_RESP2.mol2', record)
-        status.update(state='completed', output_sha256=digest(work / 'result_RESP2.mol2'),
+        result = work / ('result_' + chem['protocol'] + '.mol2')
+        write_charged_mol2(source, result, record)
+        status.update(state='completed', output_sha256=digest(result),
                       fitted_net_charge=sum(a['charge'] for a in final),
                       coordinate_policy='original input geometry; optimized geometry saved separately')
     except Exception as exc:
@@ -431,7 +507,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='command', required=True)
     prep = sub.add_parser('prepare')
-    prep.add_argument('--config', required=True)
+    prep.add_argument('--config', default=str(Path(__file__).resolve().parents[1] / 'config.json'))
     prep.add_argument('--submit', action='store_true')
     prep.add_argument('--engine', choices=['orca', 'gaussian'])
     prep.add_argument('--no-optimize', action='store_true')

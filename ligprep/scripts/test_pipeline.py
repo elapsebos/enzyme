@@ -8,15 +8,16 @@ import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parent
-spec = importlib.util.spec_from_file_location('pipeline', ROOT / 'resp2_pipeline.py')
+spec = importlib.util.spec_from_file_location('pipeline', ROOT / 'ligprep.py')
 p = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(p)
-INPUT = ROOT.parent / 'structures/ligands/HEMT_856/HEMT_QM_start_neutral.mol2'
+INPUT = ROOT.parent / 'input/HEMT.mol2'
 
 
 class PipelineChecks(unittest.TestCase):
     def config(self):
-        c = p.read_json(ROOT / 'config.example.json')
+        c = p.read_json(ROOT.parent / 'config.resp2.example.json')
+        c.pop('input_directory', None)
         c['slurm'].update(partition='test', account='test')
         c['ligands'] = [dict(id='HEMT', input=str(INPUT), charge=0, multiplicity=1)]
         return c
@@ -50,9 +51,9 @@ class PipelineChecks(unittest.TestCase):
                 script = (job / 'job.sbatch').read_text()
                 self.assertIn('--ntasks=16', script)
                 self.assertIn(str(job / 'slurm-%j.out'), script)
-                self.assertEqual((job / 'resp2_pipeline.py').read_bytes(), Path(p.__file__).read_bytes())
+                self.assertEqual((job / 'ligprep.py').read_bytes(), Path(p.__file__).read_bytes())
             # Charged species must retain their explicit state through submission.
-            c['ligands'][0]['input'] = str(ROOT.parent / 'structures/ligands/MHET_C9C/MHET_QM_start_anion.mol2')
+            c['ligands'][0]['input'] = str(ROOT.parents[1] / 'structures/ligands/MHET_C9C/MHET_QM_start_anion.mol2')
             c['ligands'][0]['charge'] = -1
             c['ligands'][0]['multiplicity'] = 1
             p.write_json(config, c)
@@ -182,6 +183,68 @@ class PipelineChecks(unittest.TestCase):
                 self.assertIn('%nprocshared=16', route)
                 self.assertIn('%mem=24GB', route)
                 self.assertEqual((folder / 'optimized.xyz').exists(), optimize)
+
+    def test_input_folder_discovery_unknown_files_and_disabled_selection(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / 'input').mkdir()
+            (root / 'input/HEMT.mol2').write_bytes(INPUT.read_bytes())
+            (root / 'input/new.mol2').write_bytes(INPUT.read_bytes())
+            c = self.config()
+            c.update(input_directory='input', work_root='output')
+            c['ligands'][0]['input'] = 'HEMT.mol2'
+            path = root / 'config.json'
+            p.write_json(path, c)
+            with self.assertRaisesRegex(ValueError, 'new input files'): p.prepare(path)
+            self.assertFalse((root / 'output').exists())
+            c['ligands'].append(dict(id='new', input='new.mol2', enabled=False, charge=0, multiplicity=1))
+            p.write_json(path, c)
+            p.prepare(path)
+            jobs = list((root / 'output').iterdir())
+            self.assertEqual(len(jobs), 1)
+            self.assertNotIn('input_directory', p.read_json(jobs[0] / 'config.json'))
+
+    def test_traditional_resp_gaussian_ambertools_flow(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            (folder / 'input.mol2').write_bytes(INPUT.read_bytes())
+            c = p.read_json(ROOT.parent / 'config.example.json')
+            c.pop('input_directory', None)
+            c['slurm'].update(partition='test', account='test')
+            c['ligands'] = [dict(id='HEMT', input='input.mol2', charge=0, multiplicity=1)]
+            p.write_json(folder / 'config.json', c)
+            _, atoms = p.mol2(INPUT)
+            def mock(args, stage, label, stdin=None):
+                if label == 'qm':
+                    (stage / 'qm.stdout').write_text('Normal termination\nOptimization completed.\n')
+                elif label == 'formchk':
+                    numbers = ' '.join(str(p.ELEMENTS.index(a['element'])) for a in atoms)
+                    coords = ' '.join(str(x / .529177210903) for a in atoms for x in a['xyz'])
+                    (stage / 'job.fchk').write_text('Atomic numbers I N= %d\n%s\nCurrent cartesian coordinates R N= %d\n%s\n' % (len(atoms), numbers, len(atoms)*3, coords))
+                elif label == 'espgen':
+                    coords = ''.join(' '.join(str(x / .529177210903) for x in a['xyz']) + '\n' for a in atoms)
+                    (stage / 'esp.dat').write_text('%d 1\n' % len(atoms) + coords + '0 0 0 1\n')
+                elif label == 'antechamber':
+                    (stage / 'ligand.ac').write_text(''.join('ATOM %d %s\n' % (a['id'], a['name']) for a in atoms))
+                elif label.startswith('respgen'):
+                    (stage / args[args.index('-o')+1]).write_text('mock fitting input')
+                elif label in ('resp1', 'resp2'):
+                    q = [.2, -.2] + [0.] * (len(atoms)-2)
+                    (stage / args[args.index('-t')+1]).write_text(' '.join(map(str, q)))
+                else:
+                    raise AssertionError('Unexpected stage, including Multiwfn: ' + label)
+            with patch.object(p.shutil, 'which', return_value=sys.executable), patch.object(p, 'execute', side_effect=mock):
+                p.run(folder / 'config.json')
+            self.assertTrue((folder / 'result_RESP.mol2').exists())
+            self.assertFalse((folder / 'solvent').exists())
+            record = p.read_json(folder / 'charges.json')
+            self.assertEqual(record['protocol'], 'RESP')
+            self.assertIsNone(record['delta'])
+            for stage in ('gas', 'opt'):
+                text = (folder / stage / 'job.gjf').read_text()
+                self.assertIn('HF/6-31G(d)', text)
+                self.assertNotIn('SCRF', text)
+            self.assertTrue((folder / 'gas/resp2.in').exists())
 
 
 if __name__ == '__main__':

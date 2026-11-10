@@ -1,6 +1,6 @@
 # ligprep 脚本解析与 fir 集群配置清单
 
-检查日期：2026-11-11。下述问题记录针对最初复制来的脚本。后续已新增配置驱动流程并替换活动入口，原脚本保存在 ligprep/legacy；使用说明见 ligprep/README.md，实际配置为 ligprep/config.example.json。尚未在 fir 或真实 QM 软件上执行。
+检查日期：2026-11-11。下述问题针对最初复制来的脚本。当前已采用 input/、scripts/、output/、config.json 和 run.sh 布局；默认传统 RESP，RESP2 为可选协议。原脚本位于 legacy/；当前说明见 ligprep/README.md。尚未在 fir 或真实 QM 软件上执行。
 
 ## 实际计算流程
 

@@ -1,2 +1,4 @@
 /runs/
 /config.fir.json
+/output/*
+!/output/.gitkeep

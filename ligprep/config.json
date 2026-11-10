@@ -1,0 +1,76 @@
+{
+  "engine": "gaussian",
+  "slurm": {
+    "partition": null,
+    "account": null,
+    "qos": null,
+    "constraint": null,
+    "licenses": null,
+    "time": "24:00:00",
+    "nodes": 1,
+    "ntasks": 1,
+    "cpus_per_task": 16,
+    "mem": "32G"
+  },
+  "environment": {
+    "setup_shell": [],
+    "python": "python3",
+    "omp_threads": 16
+  },
+  "programs": {
+    "orca": "orca",
+    "orca_2mkl": "orca_2mkl",
+    "gaussian": "g16",
+    "formchk": "formchk",
+    "multiwfn": "Multiwfn",
+    "antechamber": "antechamber",
+    "espgen": "espgen",
+    "respgen": "respgen",
+    "resp": "resp"
+  },
+  "resources": {
+    "orca_maxcore_mb": 1000,
+    "gaussian_memory": "24GB"
+  },
+  "chemistry": {
+    "protocol": "RESP",
+    "delta": null,
+    "solvent": "Water",
+    "optimize": true,
+    "orca_opt": "B97-3c Opt TightSCF",
+    "orca_sp": "B3LYP/G D3 def2-TZVP def2/J RIJCOSX TightSCF",
+    "gaussian_opt": "HF/6-31G(d) Opt SCF=Tight NoSymm",
+    "gaussian_sp": "HF/6-31G(d) SCF=Tight NoSymm",
+    "gaussian_solvent_model": "IEFPCM",
+    "charge_tolerance": 0.001,
+    "coordinate_tolerance_angstrom": 0.005,
+    "fit_backend": "ambertools"
+  },
+  "work_root": "output",
+  "scratch_root": null,
+  "software_versions": {
+    "qm": null,
+    "multiwfn": null,
+    "mpi": null
+  },
+  "ligands": [
+    {
+      "id": "HEMT",
+      "input": "HEMT.mol2",
+      "enabled": true,
+      "charge": 0,
+      "multiplicity": 1
+    },
+    {
+      "id": "PET3",
+      "input": "PET3.mol2",
+      "enabled": true,
+      "charge": 0,
+      "multiplicity": 1
+    }
+  ],
+  "input_directory": "input",
+  "execution": {
+    "submit": false
+  }
+}
