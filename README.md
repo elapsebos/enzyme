@@ -17,6 +17,7 @@ The project has candidate structures downloaded and sequence-audited. 6EQE is th
 - docs/run_manifest.template.yaml: provenance template for each simulation run.
 - docs/structure_comparison.md: verified structure metadata and sequence mapping.
 - docs/pet3_definition.md: PET3 literature definition and remaining parameterization work.
+- docs/ligand_charge_selection.md: which ligand states need RESP and how the new reference ligand files are organized.
 - docs/pet_oligomer_literature_review.md: comparison of recent PETase oligomer choices and the current PET3 project decision.
 - docs/protein_preparation.md: status and limits of the coordinate-only WT/PADFL structures.
 - docs/initial_pose_qc.md and docs/initial_pose_qc_pet4.md: preliminary PET3/PET4 placement seeds and geometric checks.
@@ -28,7 +29,7 @@ The project has candidate structures downloaded and sequence-audited. 6EQE is th
 Keep small inputs, scripts, decisions, and analysis code in version control. The source PDFs and DOCX remain local and are excluded by .gitignore. Keep production trajectories and other large outputs in project storage, with their locations and checksums recorded in run manifests.
 
     docs/          project decisions, checklists, literature notes, templates
-    structures/    source and prepared structures
+    structures/    source and prepared structures, ligands/ includes experimental poses and QM starts
     preparation/   preparation scripts and reproducible inputs
     forcefield/    ligand parameterization inputs and notes
     mdp/           GROMACS run parameter files

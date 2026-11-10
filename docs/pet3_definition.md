@@ -9,6 +9,7 @@ The molecular structure shown in Scheme 2 is a three-terephthalate oligomer with
 ## Preparation status
 
 - A single gas-phase starting conformer may be generated with RDKit MMFF for coordinate preparation only.
+- `structures/PET3/2-HE-MHET3_qm_start_neutral_ZERO_PLACEHOLDER.mol2` is prepared as a QM geometry/connectivity input. Its atom charges are deliberately zero placeholders; they are not RESP or production force-field charges.
 - The paper parameterized the ligand with GAFF and RESP charges from HF/6-31G(d); those parameters have not yet been generated here.
 - The 5XH3 HEMT pose is the intended active-site anchor. A final aligned pose and scissile-ester choice still require explicit atom mapping and geometry review.
 - Do not use the RDKit MMFF conformer or Gasteiger charges as a production MD topology.
