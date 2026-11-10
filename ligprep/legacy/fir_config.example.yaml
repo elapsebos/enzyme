@@ -1,0 +1,37 @@
+# 配置收集表；当前原始脚本不会自动读取此 YAML。
+# 未知值保留 null，勿把其他集群的账号/分区当作 fir 配置。
+cluster: fir
+partition: null
+account: null
+qos: null
+constraint: null
+nodes: 1
+walltime: null
+memory_total: null
+engine: null # orca 或 gaussian
+engine_version: null
+module_or_source_commands: null
+engine_executable_absolute_path: null
+mpi_module_for_orca: null
+multiwfn_version: null
+multiwfn_executable: null
+obabel_executable: null
+formchk_or_orca_2mkl_path: null
+project_absolute_path: null
+input_directory: null
+results_directory: null
+scratch_directory: null
+scratch_policy: null
+charge_protocol: null # HF/6-31G(d) RESP 或经过确认的 RESP2(0.5) 协议
+orca_resource_candidate:
+  ntasks: 16
+  cpus_per_task: 1
+  maxcore_mb_per_process: 1000
+gaussian_resource_candidate:
+  ntasks: 1
+  cpus_per_task: 16
+  nprocshared: 16
+ligands:
+  HEMT: {charge: 0, multiplicity: 1}
+  PET3: {charge: 0, multiplicity: 1}
+  MHET_anion_optional: {charge: -1, multiplicity: 1}
