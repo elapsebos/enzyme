@@ -15,7 +15,10 @@
   "environment": {
     "setup_shell": [],
     "python": "python3",
-    "omp_threads": 16
+    "omp_threads": 16,
+    "reject_conda": true,
+    "module_init": null,
+    "modules": []
   },
   "programs": {
     "orca": "orca",

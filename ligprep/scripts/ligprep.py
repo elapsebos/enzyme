@@ -87,6 +87,24 @@ def positive_int(value, name):
     return value
 
 
+def conda_location(path):
+    """Detect a Conda installation/environment from its metadata, not its name."""
+    location = Path(path).resolve()
+    return any((parent / 'conda-meta').is_dir() for parent in (location, *location.parents))
+
+
+def ensure_no_conda(config, executable_paths=()):
+    if not config['environment'].get('reject_conda', True):
+        return
+    level = os.environ.get('CONDA_SHLVL', '0')
+    if os.environ.get('CONDA_PREFIX') or level not in ('', '0'):
+        raise ValueError('Active Conda environment detected. Start from a clean Alliance module environment before preparing/submitting jobs.')
+    library_paths = [entry for entry in os.environ.get('LD_LIBRARY_PATH', '').split(os.pathsep) if entry]
+    for location in (sys.prefix, sys.base_prefix, sys.executable, *executable_paths, *library_paths):
+        if conda_location(location):
+            raise ValueError('Conda-managed Python/program detected: ' + str(location) + '. Use Alliance modules or a module-based venv.')
+
+
 def validate(config):
     if config['engine'] not in ('orca', 'gaussian'):
         raise ValueError('engine must be orca or gaussian')
@@ -103,8 +121,19 @@ def validate(config):
     if slurm['nodes'] != 1:
         raise ValueError('This pipeline supports single-node jobs only')
     env = config['environment']
+    if type(env.get('reject_conda', True)) is not bool:
+        raise ValueError('environment.reject_conda must be boolean')
+    if not isinstance(env.get('modules', []), list) or not all(
+            isinstance(m, str) and re.fullmatch(r'[A-Za-z0-9_./+:-]+', m) for m in env.get('modules', [])):
+        raise ValueError('environment.modules must be a list of module names/versions')
+    if env.get('module_init') is not None and (not isinstance(env['module_init'], str) or '\n' in env['module_init']):
+        raise ValueError('module_init must be a single shell initialization file path')
     if not isinstance(env['setup_shell'], list) or not all(isinstance(s, str) for s in env['setup_shell']):
         raise ValueError('setup_shell must be a list of trusted shell commands')
+    if env.get('reject_conda', True) and any(re.search(
+            r'\b(?:conda|mamba|micromamba)\s+(?:activate|run|install|create)\b|conda\.sh', command)
+            for command in env['setup_shell']):
+        raise ValueError('Conda activation/setup conflicts with reject_conda; use modules instead')
     positive_int(env['omp_threads'], 'environment.omp_threads')
     if config['engine'] == 'orca':
         if slurm['cpus_per_task'] != 1 or env['omp_threads'] != 1:
@@ -168,6 +197,19 @@ def sbatch_text(config, work, runner):
     # A separate sbatch process is launched with cwd=work; log paths are absolute.
     directives += ['#SBATCH --output=' + str(work / 'slurm-%j.out'),
                    '#SBATCH --error=' + str(work / 'slurm-%j.err'), '', 'set -euo pipefail']
+    env = config['environment']
+    if env.get('reject_conda', True):
+        directives += [
+            'if [[ -n "${CONDA_PREFIX:-}" || "${CONDA_SHLVL:-0}" != "0" ]]; then',
+            '  echo "ERROR: inherited Conda activation; submit from a clean module environment." >&2',
+            '  exit 2',
+            'fi']
+    if env.get('module_init'):
+        directives.append('source ' + shlex.quote(env['module_init']))
+    if env.get('modules'):
+        directives += ['type module >/dev/null 2>&1 || { echo "ERROR: module not initialized; configure environment.module_init." >&2; exit 2; }']
+        directives += ['module load ' + shlex.quote(module) for module in env['modules']]
+        directives += ['module list']
     directives += config['environment']['setup_shell']
     directives += ['export OMP_NUM_THREADS=' + str(config['environment']['omp_threads']),
                    'cd ' + shlex.quote(str(work)),
@@ -200,6 +242,7 @@ def prepare(path, submit=False, engine=None, no_optimize=False):
             selected.append(dict(item, input=str(discovered[item['input']])))
         config['ligands'] = selected
     validate(config)
+    ensure_no_conda(config)
     inputs = []
     for ligand in config['ligands']:
         source = (path.parent / ligand['input']).resolve()
@@ -373,6 +416,7 @@ def run(path):
     path = Path(path).resolve()
     config = read_json(path)
     validate(config)
+    ensure_no_conda(config)
     work = path.parent
     if (work / 'run_status.json').exists():
         raise ValueError('Run already started; prepare a fresh directory to retain evidence')
@@ -391,6 +435,7 @@ def run(path):
         if not program:
             raise ValueError('Executable missing from compute-node environment: ' + key)
         programs[key] = str(Path(program).resolve())
+    ensure_no_conda(config, programs.values())
     slurm = config['slurm']
     for env, expected in [('SLURM_NTASKS', slurm['ntasks']), ('SLURM_CPUS_PER_TASK', slurm['cpus_per_task'])]:
         if os.environ.get(env) and int(os.environ[env]) != expected:
@@ -407,7 +452,10 @@ def run(path):
     os.environ['OMP_NUM_THREADS'] = str(config['environment']['omp_threads'])
     status = dict(state='running', started=datetime.datetime.now(datetime.timezone.utc).isoformat(),
                   input_sha256=digest(source), programs=programs, slurm_job_id=os.environ.get('SLURM_JOB_ID'),
-                  gaussian_scratch=str(scratch), declared_versions=config.get('software_versions', {}))
+                  gaussian_scratch=str(scratch), declared_versions=config.get('software_versions', {}),
+                  python_executable=sys.executable, python_version=sys.version,
+                  loaded_modules=os.environ.get('LOADEDMODULES', ''),
+                  reject_conda=config['environment'].get('reject_conda', True))
     write_json(work / 'run_status.json', status)
     try:
         geometry = atoms

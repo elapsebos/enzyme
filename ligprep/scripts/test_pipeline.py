@@ -18,6 +18,7 @@ class PipelineChecks(unittest.TestCase):
     def config(self):
         c = p.read_json(ROOT.parent / 'config.resp2.example.json')
         c.pop('input_directory', None)
+        c['environment']['reject_conda'] = False  # Local mock tests can run on Windows Conda.
         c['slurm'].update(partition='test', account='test')
         c['ligands'] = [dict(id='HEMT', input=str(INPUT), charge=0, multiplicity=1)]
         return c
@@ -209,6 +210,7 @@ class PipelineChecks(unittest.TestCase):
             folder = Path(tmp)
             (folder / 'input.mol2').write_bytes(INPUT.read_bytes())
             c = p.read_json(ROOT.parent / 'config.example.json')
+            c['environment']['reject_conda'] = False
             c.pop('input_directory', None)
             c['slurm'].update(partition='test', account='test')
             c['ligands'] = [dict(id='HEMT', input='input.mol2', charge=0, multiplicity=1)]
@@ -245,6 +247,25 @@ class PipelineChecks(unittest.TestCase):
                 self.assertIn('HF/6-31G(d)', text)
                 self.assertNotIn('SCRF', text)
             self.assertTrue((folder / 'gas/resp2.in').exists())
+
+    def test_alliance_environment_guard_and_module_script_order(self):
+        c = self.config()
+        c['environment'].update(reject_conda=True, module_init='/site/module-init.sh',
+                                modules=['StdEnv/test', 'python/test', 'orca/test'])
+        p.validate(c)
+        script = p.sbatch_text(c, Path('/jobs/a'), Path('/jobs/a/ligprep.py'))
+        self.assertLess(script.index('CONDA_PREFIX'), script.index('source /site/module-init.sh'))
+        self.assertLess(script.index('module load python/test'), script.index('exec python3'))
+        with patch.dict(p.os.environ, {'CONDA_PREFIX': '/env', 'CONDA_SHLVL': '1'}):
+            with self.assertRaisesRegex(ValueError, 'Active Conda'): p.ensure_no_conda(c)
+        c['environment']['setup_shell'] = ['conda activate env']
+        with self.assertRaisesRegex(ValueError, 'conflicts'): p.validate(c)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / 'conda-meta').mkdir()
+            (root / 'bin').mkdir()
+            self.assertTrue(p.conda_location(root / 'bin/python'))
+            self.assertFalse(p.conda_location(Path('/anaconda-named-but-not-an-environment/python')))
 
 
 if __name__ == '__main__':

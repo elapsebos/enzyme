@@ -4,6 +4,27 @@
 
 需要 Python 3.10+、Bash、Slurm，以及所选 QM/拟合程序。Python 无额外依赖。新流程不使用 Open Babel 或 PQR。
 
+## fir / Alliance 环境
+
+使用 Alliance modules 提供的 Python、Gaussian/ORCA、AmberTools。本流程只用 Python 标准库，通常无需虚拟环境；如需额外 Python 包，优先考虑基于 module Python 的 venv。此前对 fir 建议 conda activate 未考虑其软件栈，现已纠正。
+
+environment.modules 配置实际模块名/版本列表，脚本按顺序生成 module load 并输出 module list；不猜测 fir 版本，模板列表保持为空，用户需填写。environment.module_init 可指定模块初始化文件，若 sbatch 已可用 module 则为 null。setup_shell 留给其他受信任的 source/export 命令（如 Multiwfnpath），不填写 Conda 激活命令。
+
+reject_conda 默认 true，准备与运行时检查活动 Conda、Conda 管理的 Python/软件路径以及 LD_LIBRARY_PATH。sbatch 在加载模块前也会拒绝继承的 Conda 激活状态。检查依赖环境变量和 conda-meta 元数据，只覆盖常见情况，不能证明所有第三方库都干净。运行记录保存 Python 路径/版本和已加载模块。
+
+若登录后自动激活 Conda，请先按嵌套层数正常执行 conda deactivate，再加载平台 Python/所需软件模块。不要只 unset CONDA_PREFIX；脚本不修改 .bashrc 或用户安装。实际模块可查询：
+
+```bash
+module spider python
+module spider gaussian
+module spider amber
+module list
+command -v python3
+python3 -c 'import sys; print(sys.executable); print(sys.version)'
+```
+
+传统 RESP 路线无需 Multiwfn。查证来源及在线文档访问限制见 docs/fir_environment_policy.md。
+
 ## 运行
 
 1. 将待算显式氢 MOL2 放入 input/。已放入 HEMT.mol2、PET3.mol2，原子电荷都是零占位。
