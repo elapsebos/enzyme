@@ -1,0 +1,15 @@
+{
+  "paper_doi": "10.1021/acscatal.1c03700",
+  "metadata_url": "https://api.figshare.com/v2/articles/16567410",
+  "downloaded_utc": "2026-11-10T22:41:47.767616+00:00",
+  "archives": [
+    {
+      "file": "cs1c03700_si_001.zip",
+      "url": "https://ndownloader.figshare.com/files/30642747",
+      "bytes": 1705887,
+      "md5": "d0a799822d8e448cf9d282bedd4ca6c5",
+      "sha256": "09b0314d9fd6ea938b5f793a8a3919855ae7b1ac34247cb2702def96536baf2f",
+      "repository_md5": "d0a799822d8e448cf9d282bedd4ca6c5"
+    }
+  ]
+}

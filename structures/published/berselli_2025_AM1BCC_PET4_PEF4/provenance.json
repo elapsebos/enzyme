@@ -1,0 +1,15 @@
+{
+  "paper_doi": "10.1021/acscatal.5c01263",
+  "metadata_url": "https://zenodo.org/api/records/14697147",
+  "downloaded_utc": "2026-11-10T22:46:53.139261+00:00",
+  "archives": [
+    {
+      "file": "ZENODO_FILES.zip",
+      "url": "https://zenodo.org/api/records/14697147/files/ZENODO_FILES.zip/content",
+      "bytes": 64996948,
+      "md5": "965be9082a516daab40e7669ac280e2c",
+      "sha256": "094450f6ef755eb001183c935b23aa632727d753529a80660a816110ccb4aad5",
+      "repository_md5": "965be9082a516daab40e7669ac280e2c"
+    }
+  ]
+}

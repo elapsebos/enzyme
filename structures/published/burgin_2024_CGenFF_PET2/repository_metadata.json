@@ -1,0 +1,122 @@
+{
+  "created": "2024-03-22T18:10:10.538863+00:00",
+  "modified": "2024-04-03T17:33:15.979470+00:00",
+  "id": 10854763,
+  "conceptrecid": "10854762",
+  "doi": "10.5281/zenodo.10854763",
+  "conceptdoi": "10.5281/zenodo.10854762",
+  "doi_url": "https://doi.org/10.5281/zenodo.10854763",
+  "metadata": {
+    "title": "Supporting data for: The reaction mechanism of the Ideonella sakaiensis PETase enzyme",
+    "doi": "10.5281/zenodo.10854763",
+    "publication_date": "2024-03-22",
+    "description": "<p>Simulation data, scripts, and other supporting data for transition path sampling studies conducted as part of:</p>\n<p><strong>The reaction mechanism of the <em>Ideonella sakaiensis</em> PETase enzyme</strong></p>\n<p>By authors: Tucker Burgin, Benjamin C. Pollard, Brandon C. Knott, Heather B. Mayes, Michael F. Crowley, John E. McGeehan, Gregg T. Beckham, H. Lee Woodcock</p>\n<p>Published in Communications Chemistry, 2024</p>\n<p>This repository does not contain the aimless shooting coordinate files for each step. Those will be published separately here (for acylation) 10.5281/zenodo.10854858 and here (for deacylation) 10.5281/zenodo.10913134.</p>",
+    "access_right": "open",
+    "creators": [
+      {
+        "name": "Burgin, Tucker",
+        "affiliation": "Dartmouth College"
+      }
+    ],
+    "dates": [
+      {
+        "type": "available"
+      }
+    ],
+    "language": "eng",
+    "resource_type": {
+      "title": "Dataset",
+      "type": "dataset"
+    },
+    "license": {
+      "id": "cc-by-4.0"
+    },
+    "relations": {
+      "version": [
+        {
+          "index": 0,
+          "is_last": true,
+          "parent": {
+            "pid_type": "recid",
+            "pid_value": "10854762"
+          }
+        }
+      ]
+    }
+  },
+  "title": "Supporting data for: The reaction mechanism of the Ideonella sakaiensis PETase enzyme",
+  "links": {
+    "self": "https://zenodo.org/api/records/10854763",
+    "self_html": "https://zenodo.org/records/10854763",
+    "preview_html": "https://zenodo.org/records/10854763?preview=1",
+    "doi": "https://doi.org/10.5281/zenodo.10854763",
+    "self_doi": "https://doi.org/10.5281/zenodo.10854763",
+    "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.10854763",
+    "reserve_doi": "https://zenodo.org/api/records/10854763/draft/pids/doi",
+    "parent": "https://zenodo.org/api/records/10854762",
+    "parent_html": "https://zenodo.org/records/10854762",
+    "parent_doi": "https://doi.org/10.5281/zenodo.10854762",
+    "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.10854762",
+    "self_iiif_manifest": "https://zenodo.org/api/iiif/record:10854763/manifest",
+    "self_iiif_sequence": "https://zenodo.org/api/iiif/record:10854763/sequence/default",
+    "files": "https://zenodo.org/api/records/10854763/files",
+    "media_files": "https://zenodo.org/api/records/10854763/media-files",
+    "latest": "https://zenodo.org/api/records/10854763/versions/latest",
+    "latest_html": "https://zenodo.org/records/10854763/latest",
+    "versions": "https://zenodo.org/api/records/10854763/versions",
+    "draft": "https://zenodo.org/api/records/10854763/draft",
+    "access_links": "https://zenodo.org/api/records/10854763/access/links",
+    "access_grants": "https://zenodo.org/api/records/10854763/access/grants",
+    "access_users": "https://zenodo.org/api/records/10854763/access/users",
+    "access_request": "https://zenodo.org/api/records/10854763/access/request",
+    "access": "https://zenodo.org/api/records/10854763/access",
+    "communities": "https://zenodo.org/api/records/10854763/communities",
+    "communities-suggestions": "https://zenodo.org/api/records/10854763/communities-suggestions",
+    "request_deletion": "https://zenodo.org/api/records/10854763/request-deletion",
+    "file_modification": "https://zenodo.org/api/records/10854763/file-modification",
+    "quota_increase": "https://zenodo.org/api/records/10854763/quota-increase",
+    "requests": "https://zenodo.org/api/records/10854763/requests"
+  },
+  "updated": "2024-04-03T17:33:15.979470+00:00",
+  "recid": "10854763",
+  "revision": 6,
+  "files": [
+    {
+      "id": "999a1423-779d-4d02-8e4e-2cee16927112",
+      "key": "1.acylation.zip",
+      "size": 21793796,
+      "checksum": "md5:0ac86bc4b2f4148ae7480aa3bb5c98bc",
+      "links": {
+        "self": "https://zenodo.org/api/records/10854763/files/1.acylation.zip/content"
+      }
+    },
+    {
+      "id": "fd811236-8c46-40fc-86df-a5dc994b5ba2",
+      "key": "2.deacylation.zip",
+      "size": 32736983,
+      "checksum": "md5:14aeb9d9db7972b58551239e97aafab5",
+      "links": {
+        "self": "https://zenodo.org/api/records/10854763/files/2.deacylation.zip/content"
+      }
+    }
+  ],
+  "swh": {},
+  "owners": [
+    {
+      "id": "1087297"
+    }
+  ],
+  "status": "published",
+  "stats": {
+    "downloads": 301,
+    "unique_downloads": 285,
+    "views": 572,
+    "unique_views": 540,
+    "version_downloads": 301,
+    "version_unique_downloads": 285,
+    "version_unique_views": 540,
+    "version_views": 572
+  },
+  "state": "done",
+  "submitted": true
+}

@@ -1,0 +1,23 @@
+{
+  "paper_doi": "10.1038/s42004-024-01154-x",
+  "metadata_url": "https://zenodo.org/api/records/10854763",
+  "downloaded_utc": "2026-11-10T22:44:46.191892+00:00",
+  "archives": [
+    {
+      "file": "1.acylation.zip",
+      "url": "https://zenodo.org/api/records/10854763/files/1.acylation.zip/content",
+      "bytes": 21793796,
+      "md5": "0ac86bc4b2f4148ae7480aa3bb5c98bc",
+      "sha256": "42a4704319dcf15ec6e6bf4fe72cb1a10036dbb38a8ee91edf396de12b9ffcc5",
+      "repository_md5": "0ac86bc4b2f4148ae7480aa3bb5c98bc"
+    },
+    {
+      "file": "2.deacylation.zip",
+      "url": "https://zenodo.org/api/records/10854763/files/2.deacylation.zip/content",
+      "bytes": 32736983,
+      "md5": "14aeb9d9db7972b58551239e97aafab5",
+      "sha256": "809ee795a7f9eddda104f3cc28168a541ad840e139c86c2e651639b36cd8685b",
+      "repository_md5": "14aeb9d9db7972b58551239e97aafab5"
+    }
+  ]
+}

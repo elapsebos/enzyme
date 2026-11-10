@@ -1,0 +1,266 @@
+{
+  "files": [
+    {
+      "id": 30642747,
+      "name": "cs1c03700_si_001.zip",
+      "size": 1705887,
+      "is_link_only": false,
+      "download_url": "https://ndownloader.figshare.com/files/30642747",
+      "supplied_md5": "d0a799822d8e448cf9d282bedd4ca6c5",
+      "computed_md5": "d0a799822d8e448cf9d282bedd4ca6c5",
+      "mimetype": "application/zip"
+    }
+  ],
+  "folder_structure": {},
+  "authors": [
+    {
+      "id": 11383365,
+      "full_name": "Carola Jerves",
+      "first_name": "Carola",
+      "last_name": "Jerves",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 4730907,
+      "full_name": "Rui P. P. Neves",
+      "first_name": "Rui P. P.",
+      "last_name": "Neves",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 472085,
+      "full_name": "Maria J. Ramos",
+      "first_name": "Maria J.",
+      "last_name": "Ramos",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 11383368,
+      "full_name": "Saulo da Silva",
+      "first_name": "Saulo",
+      "last_name": "da Silva",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 472084,
+      "full_name": "Pedro A. Fernandes",
+      "first_name": "Pedro A.",
+      "last_name": "Fernandes",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    }
+  ],
+  "custom_fields": [],
+  "figshare_url": "https://acs.figshare.com/articles/dataset/Reaction_Mechanism_of_the_PET_Degrading_Enzyme_PETase_Studied_with_DFT_MM_Molecular_Dynamics_Simulations/16567410",
+  "download_disabled": false,
+  "description": "Polyethylene terephthalate (PET)\nhas been widely used to make disposable\nbottles, among others, leading to massive PET waste accumulation in\nthe environment. The discovery of the <i>Ideonella sakaiensis</i> PETase and MHETase enzymes, which hydrolyze PET into its constituting\nmonomers, opened the possibility of a promising route for PET biorecycling.\nWe describe an atomistic and thermodynamic interpretation of the catalytic\nreaction mechanism of PETase using umbrella sampling simulations at\nthe robust PBE/MM MD level with a large QM region. The reaction mechanism\ntakes place in two stages, acylation and deacylation, each of which\noccurs through a single, associative, concerted and asynchronous step.\nAcylation consists of proton transfer from Ser131 to His208, concerted\nwith a nucleophilic attack by Ser131 on the substrate, leading to\na tetrahedral transition state, which subsequently results in the\nrelease of MHET after the breaking of the ester bond. Deacylation\nis driven by deprotonation of an active site water molecule by His208,\nwith the resulting hydroxide attacking the acylated Ser131 intermediate\nand breaking its bond to the substrate. Subsequently, His208 transfers\nthe water proton to Ser131, with ensuant formation of MHET and enzyme\nregeneration. The rate-limiting acylation has a free energy barrier\nof 20.0 kcal\u00b7mol<sup>\u20131</sup>, consistent with the range\nof experimental values of 18.0\u201318.7 kcal\u00b7mol<sup>\u20131</sup>. Finally, we identify residues whose mutation should increase the\nenzyme turnover. Specifically, mutation of Asp83, Asp89, and Asp157\nby nonpositive residues is expected to decrease the barrier of the\nrate-limiting step. This work led to the understanding of the catalytic\nmechanism of PETase and opened the way for additional rational enzyme\nengineering.",
+  "funding": null,
+  "funding_list": [],
+  "version": 1,
+  "status": "public",
+  "size": 1705887,
+  "created_date": "2021-09-03T15:13:11Z",
+  "modified_date": "2023-06-10T01:30:46Z",
+  "is_public": true,
+  "is_confidential": false,
+  "is_metadata_record": false,
+  "confidential_reason": "",
+  "metadata_reason": "",
+  "license": {
+    "value": 10,
+    "name": "CC BY-NC 4.0",
+    "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+  },
+  "tags": [
+    "tetrahedral transition state",
+    "resulting hydroxide attacking",
+    "mm md level",
+    "make disposable bottles",
+    "large qm region",
+    "ideonella sakaiensis </",
+    "free energy barrier",
+    "acylated ser131 intermediate",
+    "0 \u2013 18",
+    "catalytic reaction mechanism",
+    "reaction mechanism",
+    "catalytic mechanism",
+    "work led",
+    "widely used",
+    "water proton",
+    "two stages",
+    "thermodynamic interpretation",
+    "robust pbe",
+    "proton transfer",
+    "promising route",
+    "nucleophilic attack",
+    "nonpositive residues",
+    "mhetase enzymes",
+    "limiting step",
+    "experimental values",
+    "enzyme turnover",
+    "enzyme regeneration",
+    "ensuant formation",
+    "constituting monomers",
+    "asynchronous step",
+    "among others"
+  ],
+  "keywords": [
+    "tetrahedral transition state",
+    "resulting hydroxide attacking",
+    "mm md level",
+    "make disposable bottles",
+    "large qm region",
+    "ideonella sakaiensis </",
+    "free energy barrier",
+    "acylated ser131 intermediate",
+    "0 \u2013 18",
+    "catalytic reaction mechanism",
+    "reaction mechanism",
+    "catalytic mechanism",
+    "work led",
+    "widely used",
+    "water proton",
+    "two stages",
+    "thermodynamic interpretation",
+    "robust pbe",
+    "proton transfer",
+    "promising route",
+    "nucleophilic attack",
+    "nonpositive residues",
+    "mhetase enzymes",
+    "limiting step",
+    "experimental values",
+    "enzyme turnover",
+    "enzyme regeneration",
+    "ensuant formation",
+    "constituting monomers",
+    "asynchronous step",
+    "among others"
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "title": "Biophysics",
+      "parent_id": 48,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 4,
+      "title": "Biochemistry",
+      "parent_id": 38,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 915,
+      "title": "Physical Sciences not elsewhere classified",
+      "parent_id": 6,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 12,
+      "title": "Cell Biology",
+      "parent_id": 48,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 873,
+      "title": "Chemical Sciences not elsewhere classified",
+      "parent_id": 38,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 734,
+      "title": "Biological Sciences not elsewhere classified",
+      "parent_id": 48,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 931,
+      "title": "Information Systems not elsewhere classified",
+      "parent_id": 52,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 132,
+      "title": "Infectious Diseases",
+      "parent_id": 48,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 135,
+      "title": "Computational  Biology",
+      "parent_id": 48,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    }
+  ],
+  "references": [
+    "https://doi.org/10.1021/acscatal.1c03700"
+  ],
+  "has_linked_file": false,
+  "citation": "Jerves, Carola; Neves, Rui P. P.; Ramos, Maria J.; da Silva, Saulo; Fernandes, Pedro A. (2021). Reaction Mechanism of the PET Degrading Enzyme PETase\nStudied with DFT/MM Molecular Dynamics Simulations. ACS Publications. Dataset. https://doi.org/10.1021/acscatal.1c03700.s001",
+  "related_materials": [
+    {
+      "id": 64775612,
+      "identifier": "10.1021/acscatal.1c03700",
+      "title": "Reaction Mechanism of the PET Degrading Enzyme PETase\nStudied with DFT/MM Molecular Dynamics Simulations",
+      "relation": "IsSupplementTo",
+      "identifier_type": "DOI",
+      "is_linkout": true,
+      "link": "https://doi.org/10.1021/acscatal.1c03700"
+    }
+  ],
+  "is_embargoed": false,
+  "embargo_date": null,
+  "embargo_type": null,
+  "embargo_title": "",
+  "embargo_reason": "",
+  "embargo_options": [],
+  "id": 16567410,
+  "title": "Reaction Mechanism of the PET Degrading Enzyme PETase\nStudied with DFT/MM Molecular Dynamics Simulations",
+  "doi": "10.1021/acscatal.1c03700.s001",
+  "handle": "",
+  "url": "https://api.figshare.com/v2/articles/16567410",
+  "published_date": "2021-09-03T15:13:11Z",
+  "thumb": "",
+  "defined_type": 3,
+  "defined_type_name": "dataset",
+  "group_id": 2481,
+  "url_private_api": "https://api.figshare.com/v2/account/articles/16567410",
+  "url_public_api": "https://api.figshare.com/v2/articles/16567410",
+  "url_private_html": "https://figshare.com/account/articles/16567410",
+  "url_public_html": "https://acs.figshare.com/articles/dataset/Reaction_Mechanism_of_the_PET_Degrading_Enzyme_PETase_Studied_with_DFT_MM_Molecular_Dynamics_Simulations/16567410",
+  "timeline": {
+    "posted": "2021-09-03T15:13:11",
+    "publisherPublication": "2021-09-03T00:00:00",
+    "firstOnline": "2021-09-03"
+  },
+  "resource_title": "Reaction Mechanism of the PET Degrading Enzyme PETase\nStudied with DFT/MM Molecular Dynamics Simulations",
+  "resource_doi": "10.1021/acscatal.1c03700"
+}

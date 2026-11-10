@@ -1,0 +1,43 @@
+[
+  {
+    "source": "berselli_2025_AM1BCC_PET4_PEF4",
+    "archives": 1,
+    "selected_files": 10,
+    "types": {
+      ".xyz": 6,
+      ".prmtop": 2,
+      ".inpcrd": 2
+    }
+  },
+  {
+    "source": "burgin_2024_CGenFF_PET2",
+    "archives": 2,
+    "selected_files": 17,
+    "types": {
+      ".rst7": 11,
+      ".inpcrd": 2,
+      "": 2,
+      ".prmtop": 2
+    }
+  },
+  {
+    "source": "dipede_2026_RESP_PET4",
+    "archives": 2,
+    "selected_files": 47,
+    "types": {
+      ".pdb": 7,
+      ".tpr": 21,
+      ".md": 1,
+      ".gro": 18
+    }
+  },
+  {
+    "source": "jerves_2021_RESP_PET2",
+    "archives": 1,
+    "selected_files": 4,
+    "types": {
+      ".incpcrd": 2,
+      ".prmtop": 2
+    }
+  }
+]

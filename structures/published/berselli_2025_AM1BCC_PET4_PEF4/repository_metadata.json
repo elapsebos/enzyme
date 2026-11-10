@@ -1,0 +1,115 @@
+{
+  "created": "2025-02-06T15:34:22.870706+00:00",
+  "modified": "2025-02-06T15:34:56.029987+00:00",
+  "id": 14697147,
+  "conceptrecid": "14697146",
+  "doi": "10.5281/zenodo.14697147",
+  "conceptdoi": "10.5281/zenodo.14697146",
+  "doi_url": "https://doi.org/10.5281/zenodo.14697147",
+  "metadata": {
+    "title": "Molecular-Level Mechanistic Insights into PETase-Catalyzed Plastics Hydrolysis from Accurate QM/MM Free Energy Calculations.",
+    "doi": "10.5281/zenodo.14697147",
+    "publication_date": "2025",
+    "description": "<p>Input and output files for: Molecular-Level Mechanistic Insights into PETase-Catalyzed Plastics Hydrolysis from Accurate QM/MM Free Energy Calculations.</p>",
+    "access_right": "open",
+    "creators": [
+      {
+        "name": "Berselli, Alessandro",
+        "affiliation": "University of Modena and Reggio Emilia",
+        "orcid": "0000-0002-2241-3530"
+      }
+    ],
+    "dates": [
+      {
+        "type": "submitted",
+        "description": "Input and output files provided during submission"
+      }
+    ],
+    "resource_type": {
+      "title": "Journal article",
+      "type": "publication",
+      "subtype": "article"
+    },
+    "license": {
+      "id": "cc-by-4.0"
+    },
+    "relations": {
+      "version": [
+        {
+          "index": 0,
+          "is_last": true,
+          "parent": {
+            "pid_type": "recid",
+            "pid_value": "14697146"
+          }
+        }
+      ]
+    }
+  },
+  "title": "Molecular-Level Mechanistic Insights into PETase-Catalyzed Plastics Hydrolysis from Accurate QM/MM Free Energy Calculations.",
+  "links": {
+    "self": "https://zenodo.org/api/records/14697147",
+    "self_html": "https://zenodo.org/records/14697147",
+    "preview_html": "https://zenodo.org/records/14697147?preview=1",
+    "doi": "https://doi.org/10.5281/zenodo.14697147",
+    "self_doi": "https://doi.org/10.5281/zenodo.14697147",
+    "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.14697147",
+    "reserve_doi": "https://zenodo.org/api/records/14697147/draft/pids/doi",
+    "parent": "https://zenodo.org/api/records/14697146",
+    "parent_html": "https://zenodo.org/records/14697146",
+    "parent_doi": "https://doi.org/10.5281/zenodo.14697146",
+    "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.14697146",
+    "self_iiif_manifest": "https://zenodo.org/api/iiif/record:14697147/manifest",
+    "self_iiif_sequence": "https://zenodo.org/api/iiif/record:14697147/sequence/default",
+    "files": "https://zenodo.org/api/records/14697147/files",
+    "media_files": "https://zenodo.org/api/records/14697147/media-files",
+    "latest": "https://zenodo.org/api/records/14697147/versions/latest",
+    "latest_html": "https://zenodo.org/records/14697147/latest",
+    "versions": "https://zenodo.org/api/records/14697147/versions",
+    "draft": "https://zenodo.org/api/records/14697147/draft",
+    "access_links": "https://zenodo.org/api/records/14697147/access/links",
+    "access_grants": "https://zenodo.org/api/records/14697147/access/grants",
+    "access_users": "https://zenodo.org/api/records/14697147/access/users",
+    "access_request": "https://zenodo.org/api/records/14697147/access/request",
+    "access": "https://zenodo.org/api/records/14697147/access",
+    "communities": "https://zenodo.org/api/records/14697147/communities",
+    "communities-suggestions": "https://zenodo.org/api/records/14697147/communities-suggestions",
+    "request_deletion": "https://zenodo.org/api/records/14697147/request-deletion",
+    "file_modification": "https://zenodo.org/api/records/14697147/file-modification",
+    "quota_increase": "https://zenodo.org/api/records/14697147/quota-increase",
+    "requests": "https://zenodo.org/api/records/14697147/requests"
+  },
+  "updated": "2025-02-06T15:34:56.029987+00:00",
+  "recid": "14697147",
+  "revision": 6,
+  "files": [
+    {
+      "id": "adf05899-df00-48a7-b12a-7acfe63ac432",
+      "key": "ZENODO_FILES.zip",
+      "size": 64996948,
+      "checksum": "md5:965be9082a516daab40e7669ac280e2c",
+      "links": {
+        "self": "https://zenodo.org/api/records/14697147/files/ZENODO_FILES.zip/content"
+      }
+    }
+  ],
+  "swh": {},
+  "owners": [
+    {
+      "id": "1201365"
+    }
+  ],
+  "status": "published",
+  "stats": {
+    "downloads": 90,
+    "unique_downloads": 84,
+    "views": 235,
+    "unique_views": 224,
+    "version_downloads": 90,
+    "version_unique_downloads": 84,
+    "version_unique_views": 224,
+    "version_views": 235
+  },
+  "state": "done",
+  "submitted": true
+}

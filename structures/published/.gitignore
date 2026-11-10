@@ -1,0 +1,6 @@
+# Keep downloaded originals locally; version metadata, manifests and documentation.
+**/archives/
+**/extracted/
+**/derived/
+*.part
+*.alternate
