@@ -9,6 +9,8 @@ The preliminary model contains the expected identities at 87F, 121P, 186A, 233L,
 
 ## Not yet prepared for MD
 
+Rechecked on 2026-11-11: the WT file contains 1,952 atoms and PADFL 1,949 atoms; both have 265 residues and zero hydrogen atoms. The five WT/PADFL identities and Ser160/Asp206/His237 identities are present. This confirms residue identities only, not protonation or catalytic readiness. Downloaded author systems are kept separately under structures/published; see docs/md_input_readiness.md for their different preparation states.
+
 Neither file has hydrogens, a frozen protonation/His tautomer assignment, missing-terminal reconstruction, force-field topology, minimization, or solvent/ions. The PADFL side chains have not been energy-minimized against the protein environment. Do not use these files directly for production MD.
 
 ## Required next preparation
