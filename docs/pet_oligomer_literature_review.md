@@ -8,6 +8,8 @@ PET oligomer names are not fully consistent across papers. Some count terephthal
 
 ## Examples from the literature
 
+Charge methods and actual file disclosure have now been audited separately in `ligand_charge_literature_audit.md`. In particular, the 2025 ACS Catalysis PET4/PEF4 study uses AM1-BCC/GAFF and provides starting topologies/coordinates on Zenodo; its use of PET4 must not be treated as evidence for RESP or RESP2.
+
 | Study | Substrate used | Why it was selected / role | Implication here |
 |---|---|---|---|
 | Computational Insights into the Catalytic Mechanism of Is-PETase (Chem. Eur. J., 2022; DOI 10.1002/chem.202201728) | Docking compared HEMT, 2PET, and 3PET; the QM/MM reaction path was then computed for HEMT | HEMT is a small, experimentally anchored local reaction model; longer ligands were used to examine how aromatic contacts and W156 affect pose | Good precedent for separating binding-pose context from a smaller reactive QM model; the QM/MM result itself is not a long-chain substrate calculation |
