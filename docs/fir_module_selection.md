@@ -2,7 +2,7 @@
 
 依据：用户提供的 fir `module spider` 输出（2026-11-11）。只证明软件在模块树中可查询，不证明账户授权、模块组合已成功加载或所需可执行程序已运行。
 
-传统 RESP 的 config.json/config.example.json 已填写候选模块链：
+以下为先前 Gaussian/AmberTools 的历史候选链，现保存在 config.gaussian-resp.example.json。用户因 Gaussian 授权要求选择 ORCA；当前实际配置以 docs/orca_resp_fir_checklist.md 为准：
 
 ```text
 StdEnv/2023

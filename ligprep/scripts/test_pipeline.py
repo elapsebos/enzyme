@@ -209,7 +209,7 @@ class PipelineChecks(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             folder = Path(tmp)
             (folder / 'input.mol2').write_bytes(INPUT.read_bytes())
-            c = p.read_json(ROOT.parent / 'config.example.json')
+            c = p.read_json(ROOT.parent / 'config.gaussian-resp.example.json')
             c['environment']['reject_conda'] = False
             c.pop('input_directory', None)
             c['slurm'].update(partition='test', account='test')
@@ -247,6 +247,33 @@ class PipelineChecks(unittest.TestCase):
                 self.assertIn('HF/6-31G(d)', text)
                 self.assertNotIn('SCRF', text)
             self.assertTrue((folder / 'gas/resp2.in').exists())
+
+    def test_orca_gas_resp_uses_no_gaussian_amber_or_solvent(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            (folder / 'input.mol2').write_bytes(INPUT.read_bytes())
+            c = p.read_json(ROOT.parent / 'config.example.json')
+            c['environment']['reject_conda'] = False
+            c['slurm'].update(partition='test', account='test')
+            c.pop('input_directory', None)
+            c['ligands'] = [dict(id='HEMT', input='input.mol2', charge=0, multiplicity=1)]
+            p.write_json(folder / 'config.json', c)
+            with patch.object(p.shutil, 'which', return_value=sys.executable), patch.object(p, 'execute', side_effect=self.fake_engine):
+                p.run(folder / 'config.json')
+            status = p.read_json(folder / 'run_status.json')
+            self.assertEqual(set(status['programs']), {'orca', 'orca_2mkl', 'multiwfn'})
+            self.assertEqual(status['state'], 'completed')
+            record = p.read_json(folder / 'charges.json')
+            self.assertEqual(record['protocol'], 'RESP')
+            self.assertEqual(record['fit_backend'], 'multiwfn')
+            self.assertAlmostEqual(record['atoms'][0]['charge'], .2)
+            self.assertFalse((folder / 'solvent').exists())
+            for stage in ('opt', 'gas'):
+                text = (folder / stage / 'job.inp').read_text()
+                self.assertIn('HF 6-31G*', text)
+                self.assertNotIn('%cpcm', text)
+            c['chemistry']['orca_sp'] = 'B3LYP def2-TZVP'
+            with self.assertRaisesRegex(ValueError, 'requires HF'): p.validate(c)
 
     def test_alliance_environment_guard_and_module_script_order(self):
         c = self.config()

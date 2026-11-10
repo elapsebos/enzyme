@@ -152,11 +152,14 @@ def validate(config):
     if chem['protocol'] not in ('RESP', 'RESP2'):
         raise ValueError('protocol must be RESP or RESP2')
     if chem['protocol'] == 'RESP':
-        if config['engine'] != 'gaussian' or chem.get('fit_backend') != 'ambertools':
-            raise ValueError('Traditional RESP currently requires gaussian + ambertools backend')
-        if not re.search(r'\bHF/6-31G\(d\)', chem['gaussian_sp'], re.I):
-            raise ValueError('This traditional RESP preset requires HF/6-31G(d) gas ESP')
-        if re.search(r'scrf|cpcm|smd|solvent', chem['gaussian_sp'] + ' ' + chem['gaussian_opt'], re.I):
+        expected_backend = 'ambertools' if config['engine'] == 'gaussian' else 'multiwfn'
+        if chem.get('fit_backend') != expected_backend:
+            raise ValueError('RESP requires ' + config['engine'] + ' + ' + expected_backend)
+        keywords = chem[config['engine'] + '_sp']
+        hf_pattern = r'\bHF/6-31G\(d\)' if config['engine'] == 'gaussian' else r'\bHF\s+6-31G(?:\*|\(d\))'
+        if not re.search(hf_pattern, keywords, re.I):
+            raise ValueError('This RESP preset requires HF/6-31G(d) or ORCA HF 6-31G* gas ESP')
+        if re.search(r'scrf|cpcm|smd|solvent', keywords + ' ' + chem[config['engine'] + '_opt'], re.I):
             raise ValueError('Traditional RESP preset must use gas-phase QM keywords')
     elif chem.get('fit_backend', 'multiwfn') != 'multiwfn':
         raise ValueError('RESP2 currently requires multiwfn backend')
@@ -428,7 +431,8 @@ def run(path):
     chem = config['chemistry']
     programs = {}
     traditional = chem['protocol'] == 'RESP'
-    required = (['antechamber', 'espgen', 'respgen', 'resp'] if traditional else ['multiwfn'])
+    amber_backend = chem.get('fit_backend') == 'ambertools'
+    required = (['antechamber', 'espgen', 'respgen', 'resp'] if amber_backend else ['multiwfn'])
     required += ['orca', 'orca_2mkl'] if config['engine'] == 'orca' else ['gaussian', 'formchk']
     for key in required:
         program = shutil.which(config['programs'][key])
@@ -518,7 +522,7 @@ def run(path):
                 geometry = new_geometry
                 xyz_write(work / 'optimized.xyz', geometry)
                 continue
-            if traditional:
+            if amber_backend:
                 fitted = amber_fit(folder, programs, source, ligand, geometry, chem)
                 charges[stage] = fitted
                 continue
@@ -535,7 +539,9 @@ def run(path):
         final = [dict(id=a['id'], name=a['name'], element=a['element'], xyz=g['xyz'],
                       charge=g['charge'] if traditional else (1-delta)*g['charge'] + delta*charges['solvent'][i]['charge'])
                  for i, (a, g) in enumerate(zip(atoms, charges['gas']))]
-        record = dict(protocol=chem['protocol'], delta=delta, net_charge=ligand['charge'],
+        record = dict(protocol=chem['protocol'], fit_backend=chem.get('fit_backend', 'multiwfn'),
+                      engine=config['engine'], qm_method=chem[config['engine'] + '_sp'],
+                      delta=delta, net_charge=ligand['charge'],
                       charge_tolerance=chem['charge_tolerance'], input_sha256=digest(source), atoms=final)
         write_json(work / 'charges.json', record)
         result = work / ('result_' + chem['protocol'] + '.mol2')

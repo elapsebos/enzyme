@@ -1,6 +1,6 @@
 # 配体电荷批量计算
 
-目录：input/ 放待算 MOL2；scripts/ 放运行程序与测试；output/ 放结果；config.json 是实际配置；run.sh 为统一入口。config.example.json 是传统 RESP 示例；config.resp2.example.json 是 RESP2 示例。legacy/ 仅供追溯。
+目录：input/ 放待算 MOL2；scripts/ 放运行程序与测试；output/ 放结果；config.json 是实际配置；run.sh 为统一入口。config.example.json 是 ORCA+Multiwfn 气相 RESP 示例；config.gaussian-resp.example.json 保留 Gaussian+AmberTools 两阶段示例；config.resp2.example.json 是 RESP2 示例。legacy/ 仅供追溯。
 
 需要 Python 3.10+、Bash、Slurm，以及所选 QM/拟合程序。Python 无额外依赖。新流程不使用 Open Babel 或 PQR。
 
@@ -8,7 +8,7 @@
 
 使用 Alliance modules 提供的 Python、Gaussian/ORCA、AmberTools。本流程只用 Python 标准库，通常无需虚拟环境；如需额外 Python 包，优先考虑基于 module Python 的 venv。此前对 fir 建议 conda activate 未考虑其软件栈，现已纠正。
 
-environment.modules 配置实际模块名/版本列表，脚本按顺序生成 module load 并输出 module list。传统 RESP 配置现已依据用户提供的 fir 输出填写候选链；Python/Gaussian 的前置依赖仍需验证，详见 docs/fir_module_selection.md。RESP2 示例模块列表仍为空，待确认 ORCA/MPI 依赖。environment.module_init 可指定模块初始化文件，若 sbatch 已可用 module 则为 null。setup_shell 留给其他受信任的 source/export 命令（如 Multiwfnpath），不填写 Conda 激活命令。
+environment.modules 配置实际模块名/版本列表，脚本按顺序生成 module load 并输出 module list。当前 ORCA 配置选择 python/3.11.5、orca/6.1.1、multiwfn/3.8，但前置依赖尚需 fir spider 确认；未沿用 Amber 的 MPI 依赖。参见 docs/orca_resp_fir_checklist.md。environment.module_init 可指定模块初始化文件，若 sbatch 已可用 module 则为 null。setup_shell 留给其他受信任的 source/export 命令（如 Multiwfnpath），不填写 Conda 激活命令。
 
 reject_conda 默认 true，准备与运行时检查活动 Conda、Conda 管理的 Python/软件路径以及 LD_LIBRARY_PATH。sbatch 在加载模块前也会拒绝继承的 Conda 激活状态。检查依赖环境变量和 conda-meta 元数据，只覆盖常见情况，不能证明所有第三方库都干净。运行记录保存 Python 路径/版本和已加载模块。
 
@@ -23,7 +23,7 @@ command -v python3
 python3 -c 'import sys; print(sys.executable); print(sys.version)'
 ```
 
-传统 RESP 路线无需 Multiwfn。查证来源及在线文档访问限制见 docs/fir_environment_policy.md。
+Gaussian+AmberTools 的 RESP 路线无需 Multiwfn；当前 ORCA RESP 路线需要 Multiwfn。环境政策来源及访问限制见 docs/fir_environment_policy.md。
 
 ## 运行
 
@@ -41,13 +41,15 @@ execution.submit=false 时只在 output/ 下生成独立任务。检查 job.sbat
 
 ## 科学协议
 
-默认传统 RESP：Gaussian 气相 HF/6-31G(d) 优化和 ESP 单点，经 AmberTools espgen、antechamber、respgen 和两阶段 resp 拟合。需要 g16、formchk、antechamber、espgen、respgen、resp，不需要 Multiwfn。不计算溶剂单点，不进行 delta 混合。
+默认气相 RESP：ORCA 气相 HF 6-31G* 优化和单点，经 orca_2mkl 转换波函数后由 Multiwfn 拟合。需要 orca、orca_2mkl、Multiwfn，不调用 Gaussian/AmberTools。不计算溶剂单点，不进行 delta 混合。首测只启用 HEMT，PET3 暂时禁用。
 
-这与当前 PET3 文献所述 HF/6-31G(d)/RESP 方法对齐，但并不证明完全复现所有细节。ESP 网格、等价原子约束、构象数和优化约定仍需对照论文SI；拟合输入结果全部保留。respgen 的控制参数在 resp1.in/resp2.in 中；resp2.in 表示第二阶段拟合输入，不是 RESP2 电荷协议。
+该设置保留 HF/6-31G(d) 气相 RESP 的方法方向，但不能声称与 Gaussian+AmberTools 两阶段结果完全等价。两引擎的角动量基函数约定、ESP网格、约束及拟合后端可能不同；Multiwfn菜单和等价原子处理须用真实日志核对。charges.json记录引擎、拟合后端和QM方法，优化/拟合输入输出全部保留。
+
+如将来使用 Gaussian 两阶段路线，采用 config.gaussian-resp.example.json，并确认许可证。其 resp2.in 是第二阶段拟合输入，不是 RESP2 混合协议。ORCA 自带的 !RESP 使用另一类网格拟合，也不在这里自动替代 Multiwfn 流程。
 
 可选 RESP2：将 config.resp2.example.json 复制为 config.json 后填写 fir 设置。示例为 ORCA+Multiwfn，在同一溶剂优化几何上计算气相/溶剂电荷并按 delta 混合。Gaussian 也支持 RESP2，但须设置正确的共享内存布局与方法/溶剂模型。
 
-支持：RESP = Gaussian+AmberTools；RESP2 = Gaussian或ORCA+Multiwfn。不支持的组合在准备阶段报错。只改 protocol 字符串不等于切换完整协议。同一 WT/PADFL 对照中，同一配体应采用同一电荷协议。Multiwfn菜单需与 fir 安装版本核对。
+支持：RESP = ORCA+Multiwfn 或 Gaussian+AmberTools；RESP2 = Gaussian或ORCA+Multiwfn。不支持的组合在准备阶段报错。只改 protocol 字符串不等于切换完整协议。同一 WT/PADFL 对照中，同一配体应采用同一电荷协议。Multiwfn菜单需与 fir 安装版本核对。
 
 ## 配置
 
