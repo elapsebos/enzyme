@@ -8,7 +8,7 @@
 
 使用 Alliance modules 提供的 Python、Gaussian/ORCA、AmberTools。本流程只用 Python 标准库，通常无需虚拟环境；如需额外 Python 包，优先考虑基于 module Python 的 venv。此前对 fir 建议 conda activate 未考虑其软件栈，现已纠正。
 
-environment.modules 配置实际模块名/版本列表，脚本按顺序生成 module load 并输出 module list；不猜测 fir 版本，模板列表保持为空，用户需填写。environment.module_init 可指定模块初始化文件，若 sbatch 已可用 module 则为 null。setup_shell 留给其他受信任的 source/export 命令（如 Multiwfnpath），不填写 Conda 激活命令。
+environment.modules 配置实际模块名/版本列表，脚本按顺序生成 module load 并输出 module list。传统 RESP 配置现已依据用户提供的 fir 输出填写候选链；Python/Gaussian 的前置依赖仍需验证，详见 docs/fir_module_selection.md。RESP2 示例模块列表仍为空，待确认 ORCA/MPI 依赖。environment.module_init 可指定模块初始化文件，若 sbatch 已可用 module 则为 null。setup_shell 留给其他受信任的 source/export 命令（如 Multiwfnpath），不填写 Conda 激活命令。
 
 reject_conda 默认 true，准备与运行时检查活动 Conda、Conda 管理的 Python/软件路径以及 LD_LIBRARY_PATH。sbatch 在加载模块前也会拒绝继承的 Conda 激活状态。检查依赖环境变量和 conda-meta 元数据，只覆盖常见情况，不能证明所有第三方库都干净。运行记录保存 Python 路径/版本和已加载模块。
 

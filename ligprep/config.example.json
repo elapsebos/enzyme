@@ -18,7 +18,14 @@
     "omp_threads": 16,
     "reject_conda": true,
     "module_init": null,
-    "modules": []
+    "modules": [
+      "StdEnv/2023",
+      "gcc/12.3",
+      "openmpi/4.1.5",
+      "python/3.11.5",
+      "gaussian/g16.c01",
+      "amber/22.5-23.5"
+    ]
   },
   "programs": {
     "orca": "orca",
