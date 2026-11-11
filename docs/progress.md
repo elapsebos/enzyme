@@ -1,10 +1,10 @@
 # Work status
 
-Updated 2026-11-11. Input readiness is detailed in md_input_readiness.md.
+Updated 2026-11-12. Scientific input readiness was assessed on 2026-11-11 and is detailed in md_input_readiness.md.
 
 | Work item | Status | Result |
 |---|---|---|
-| Local Git repository | Ready locally | Initial commit captures project docs, scripts, three raw mmCIF structures, and provisional coordinate models. No GitHub remote is configured. |
+| Local Git repository | Ready locally | Project docs, scripts, three raw mmCIF structures, and provisional coordinate models are tracked. VERSION records v0.1.1; the retired doc/TODO.md backlog has been removed from the current tree. |
 | Structure selection | Candidate selected | 6EQE is the WT scaffold candidate; 5XH3 and 7XTW are ligand-pose references with catalytic Ser-to-Ala mutations. |
 | Sequence/structure mapping | Completed for the five PADFL sites | The expected WT residues at Y87, S121, D186, N233, and N246 are present in 6EQE chain A. |
 | WT/PADFL coordinates | Preliminary coordinate files generated | Chain-A heavy-atom WT model and PyMOL rotamer-based PADFL model are available; neither is MD-ready. |
@@ -15,7 +15,7 @@ Updated 2026-11-11. Input readiness is detailed in md_input_readiness.md.
 | GAFF/RESP topology | Workflow configured; final parameters not available | The fir workflow now selects ORCA gas-phase HF/6-31G* + Multiwfn RESP. Module prerequisites and Slurm account/partition still need confirmation. No actual QM results have been returned; no production ligand topology is frozen. |
 | Protonation and solvent preparation | Not completed for the project WT/PADFL | The two preliminary protein PDBs still contain zero hydrogens. The protonation table is pending; Maestro preparation outputs have not replaced these candidates. |
 | Published author systems | Downloaded and indexed; project validation pending | Four studies provide parameterized/solvated systems or GROMACS run inputs. These differ in ligand, force field, and reaction state and are not matched WT/PADFL–PET3 inputs. See structures/published/README.md and md_input_readiness.md. |
-| GitHub remote | Not configured | GitHub CLI and a GitHub repository connector are unavailable here; no credentials or remote URL are configured. |
+| GitHub remote | Configured; synchronization pending | origin points to https://github.com/elapsebos/enzyme.git. The latest push attempt failed because HTTPS authentication is unavailable in this environment. Local commits and tags are pending upload. |
 
 ## Immediate next gate
 

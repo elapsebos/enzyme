@@ -13,6 +13,6 @@ Advance only when the gate evidence is recorded. A failed gate returns the work 
 | CP6 — Funnel-MetaD pilot | Does this system-specific setup work as intended? | CV and funnel definitions reviewed; short pilot verifies bias/output, restart, walker exchange/sharing if used, and accessible bound/unbound regions | pilot input, logs, QC summary |
 | CP7 — Production readiness | Are inputs frozen and runs reproducible? | WT/PADFL protocols matched; independent replicas/seeds defined; storage and restart plan; software versions; manifests complete; reviewed commit tagged | run manifests and release tag |
 
-## Mapping from the original backlog
+## Workflow mapping
 
-The existing doc/TODO.md remains the detailed working backlog. Structure search, mutation mapping, and PET3 design belong mainly to CP0; protein preparation to CP1; solvation and minimization to CP4; classical MD to CP5; data-driven sampling and Funnel-MetaD design/pilots to CP6; QM/MM is a later project phase after production sampling and representative-state selection.
+Structure search, mutation mapping, and PET3 design belong mainly to CP0; protein preparation to CP1; solvation and minimization to CP4; classical MD to CP5; data-driven sampling and Funnel-MetaD design/pilots to CP6; QM/MM is a later project phase after production sampling and representative-state selection. The retired doc/TODO.md backlog is available in Git history; current scope and next steps are maintained in project_definition.md and progress.md.

@@ -1,6 +1,6 @@
 # IsPETase–PET3 WT/PADFL Project
 
-Version: **[0.1.0](VERSION)** · Updated: **2026-11-12**
+Version: **[0.1.1](VERSION)** · Updated: **2026-11-12**
 
 This repository contains structure candidates, ligand models, preparation scripts, and research records for comparing wild-type IsPETase with the PADFL variant using PET3, `2-HE(MHET)3`. The planned workflow combines unbiased molecular dynamics (MD), funnel metadynamics (Funnel-MetaD), and subsequent QM/MM analysis of selected catalytic states. PET4 is retained as an optional chain-length comparison.
 
